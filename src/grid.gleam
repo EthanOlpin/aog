@@ -1,7 +1,7 @@
 import gleam/dict.{type Dict}
 import gleam/list
 import gleam/result
-import gleam/string
+import gleam/yielder.{type Yielder}
 import position.{type Position, Position}
 
 pub type Grid(a) {
@@ -12,26 +12,20 @@ pub type Cell(a) {
   Cell(position: Position, value: a)
 }
 
-pub fn parse(input: String) -> Grid(String) {
-  let rows =
-    string.split(input, "\n")
-    |> list.index_map(parse_row)
-
-  let assert Ok(first_row) = list.first(rows)
-  let width = dict.size(first_row)
-  let cells = list.fold(rows, dict.new(), dict.merge)
-  let height = dict.size(cells) / width
-  Grid(width:, height:, wrapping: False, cells:)
+pub fn from_list(xs: List(List(a))) -> Grid(a) {
+  let row_count = list.length(xs)
+  let cells =
+    list.index_map(xs, fn(row, r) {
+      list.index_map(row, fn(cell, c) { #(Position(r, c), cell) })
+    })
+    |> list.flatten
+    |> dict.from_list
+  let width = dict.size(cells) / row_count
+  Grid(width:, height: row_count, wrapping: False, cells:)
 }
 
 pub fn to_wrapping(grid: Grid(a)) -> Grid(a) {
   Grid(..grid, wrapping: True)
-}
-
-fn parse_row(row: String, col_index: Int) -> Dict(Position, String) {
-  string.to_graphemes(row)
-  |> list.index_map(fn(c, row_index) { #(Position(row_index, col_index), c) })
-  |> dict.from_list
 }
 
 pub fn has_position(grid: Grid(a), position: Position) -> Bool {
@@ -85,4 +79,18 @@ pub fn diag_neighbors(grid: Grid(a), pos: Position) -> List(Cell(a)) {
 pub fn all_neighbors(grid: Grid(a), pos: Position) -> List(Cell(a)) {
   position.all_neighbors(pos)
   |> list.filter_map(get_cell(grid, _))
+}
+
+pub fn cells(grid: Grid(a)) -> List(Cell(a)) {
+  dict.to_list(grid.cells)
+  |> list.map(fn(entry) { Cell(entry.0, entry.1) })
+  |> list.sort(fn(a, b) { position.compare(a.position, b.position) })
+}
+
+pub fn iter_cells(grid: Grid(a)) -> Yielder(Cell(a)) {
+  let cell_iter = yielder.from_list(cells(grid))
+  case grid.wrapping {
+    True -> yielder.cycle(cell_iter)
+    False -> cell_iter
+  }
 }

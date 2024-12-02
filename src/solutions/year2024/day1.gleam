@@ -6,7 +6,7 @@ import input
 import num
 import parse
 
-pub fn solve() {
+pub fn main() {
   let assert [left, right] =
     input.get()
     |> parse.lines
@@ -24,8 +24,4 @@ pub fn solve() {
   |> list.map2(left, int.multiply)
   |> int.sum
   |> io.debug
-}
-
-pub fn main() {
-  solve()
 }

@@ -66,7 +66,7 @@ pub fn main() {
   io.println(
     "\nRunning solution for year " <> year <> " day " <> day <> "...\n",
   )
-  let solution_path = "solutions/year_" <> year <> "/day_" <> day
+  let solution_path = "solutions/year" <> year <> "/day" <> day
   shellout.command(
     run: "gleam",
     with: ["run", "-m", solution_path, "--", input_path],

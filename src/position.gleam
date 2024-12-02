@@ -1,5 +1,6 @@
 import gleam/int
 import gleam/list
+import gleam/order
 import num
 
 pub type Position {
@@ -38,4 +39,11 @@ pub fn diag_neighbors(pos: Position) -> List(Position) {
 
 pub fn all_neighbors(pos: Position) -> List(Position) {
   list.append(ortho_neighbors(pos), diag_neighbors(pos))
+}
+
+pub fn compare(a: Position, b: Position) -> order.Order {
+  case int.compare(a.row, b.row) {
+    order.Eq -> int.compare(a.col, b.col)
+    x -> x
+  }
 }

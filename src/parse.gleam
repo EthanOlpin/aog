@@ -2,6 +2,7 @@ import gleam/int
 import gleam/list
 import gleam/regexp
 import gleam/string
+import grid.{type Grid}
 
 pub fn ints(s: String) -> List(Int) {
   let assert Ok(re) = regexp.from_string("\\d+")
@@ -15,4 +16,19 @@ pub fn digits(s: String) -> List(Int) {
 
 pub fn lines(s: String) -> List(String) {
   string.split(s, "\n")
+}
+
+pub fn split(s: String, pattern: String) -> List(String) {
+  let assert Ok(re) = regexp.from_string(pattern)
+  regexp.split(re, s)
+}
+
+pub fn grid(
+  input: String,
+  row_sep_pattern: String,
+  col_sep_pattern: String,
+) -> Grid(String) {
+  split(row_sep_pattern, input)
+  |> list.map(split(col_sep_pattern, _))
+  |> grid.from_list
 }

@@ -1,26 +1,16 @@
-import gleam/http/request
-import gleam/httpc
-import gleam/result
-import logging
+import argv
 import simplifile
 
-//const base_url = "https://adventofcode.com/"
-
-pub fn fetch(year: String, day: String) -> String {
-  todo
-  // let path = "/" <> year <> "/day/" <> day <> "/input"
-  // let assert Ok(req) = request.to(base_url <> path) |> logging.debug_when_error
-  // let assert Ok(resp) = httpc.send(req) |> logging.debug_when_error
-  // resp.body
+fn read_input_path_arg() {
+  let assert [path] = argv.load().arguments
+  path
 }
 
-pub fn read(year: String, day: String) -> Result(String, Nil) {
-  let path = "inputs/" <> year <> "/" <> day
-  simplifile.read(path) |> logging.if_error |> result.replace_error(Nil)
+fn read(path: String) -> String {
+  let assert Ok(content) = simplifile.read(path)
+  content
 }
 
 pub fn get() {
-  let year = "2024"
-  let day = "1"
-  result.unwrap(read(year, day), fetch(year, day))
+  read_input_path_arg() |> read
 }

@@ -1,38 +1,31 @@
+import gleam/int
 import gleam/list
+import num
 
 pub type Position {
   Position(row: Int, col: Int)
 }
 
-pub fn wrap(position: Position, width: Int, height: Int) -> Position {
-  let Position(row, col) = position
-  let row = case row {
-    r if r >= height -> r % height
-    r if r < 0 -> height + r % height
-    r -> r
-  }
-  let col = case col {
-    c if c >= width -> c % width
-    c if c < 0 -> width + c % width
-    c -> c
-  }
-  Position(row, col)
+pub fn wrap(pos: Position, width: Int, height: Int) -> Position {
+  let row = num.wrap_index(pos.row, height)
+  let col = num.wrap_index(pos.col, width)
+  Position(row:, col:)
 }
 
-pub fn up(position: Position) -> Position {
-  Position(position.row - 1, position.col)
+pub fn up(pos: Position) -> Position {
+  Position(pos.row - 1, pos.col)
 }
 
-pub fn down(position: Position) -> Position {
-  Position(position.row + 1, position.col)
+pub fn down(pos: Position) -> Position {
+  Position(pos.row + 1, pos.col)
 }
 
-pub fn left(position: Position) -> Position {
-  Position(position.row, position.col - 1)
+pub fn left(pos: Position) -> Position {
+  Position(pos.row, pos.col - 1)
 }
 
-pub fn right(position: Position) -> Position {
-  Position(position.row, position.col + 1)
+pub fn right(pos: Position) -> Position {
+  Position(pos.row, pos.col + 1)
 }
 
 pub fn ortho_neighbors(pos: Position) -> List(Position) {

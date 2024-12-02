@@ -13,3 +13,10 @@ pub fn any(data: a) -> a {
 pub fn if_error(data: Result(a, e)) -> Result(a, e) {
   result.map_error(data, any)
 }
+
+pub fn with_context(context: String, data: a) -> a {
+  let contextualized = context <> ": " <> string.inspect(data)
+  let _ = simplifile.append(logs_path, contextualized)
+  io.debug(contextualized)
+  data
+}

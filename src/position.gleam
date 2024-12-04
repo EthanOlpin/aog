@@ -13,28 +13,72 @@ pub fn wrap(pos: Position, width: Int, height: Int) -> Position {
   Position(row:, col:)
 }
 
-pub fn up(pos: Position) -> Position {
-  Position(pos.row - 1, pos.col)
+pub type Direction {
+  Up
+  Down
+  Left
+  Right
+  UpLeft
+  UpRight
+  DownLeft
+  DownRight
 }
 
-pub fn down(pos: Position) -> Position {
-  Position(pos.row + 1, pos.col)
+const up = Position(-1, 0)
+
+const down = Position(1, 0)
+
+const left = Position(0, -1)
+
+const right = Position(0, 1)
+
+const up_left = Position(-1, -1)
+
+const up_right = Position(-1, 1)
+
+const down_left = Position(1, -1)
+
+const down_right = Position(1, 1)
+
+pub const all_directions = [
+  Up,
+  Down,
+  Left,
+  Right,
+  UpLeft,
+  UpRight,
+  DownLeft,
+  DownRight,
+]
+
+fn direction_to_delta(direction: Direction) -> Position {
+  case direction {
+    Up -> up
+    Down -> down
+    Left -> left
+    Right -> right
+    UpLeft -> up_left
+    UpRight -> up_right
+    DownLeft -> down_left
+    DownRight -> down_right
+  }
 }
 
-pub fn left(pos: Position) -> Position {
-  Position(pos.row, pos.col - 1)
-}
-
-pub fn right(pos: Position) -> Position {
-  Position(pos.row, pos.col + 1)
+pub fn shift(pos: Position, direction: Direction) -> Position {
+  add(pos, direction_to_delta(direction))
 }
 
 pub fn ortho_neighbors(pos: Position) -> List(Position) {
-  [up(pos), down(pos), left(pos), right(pos)]
+  [shift(pos, Up), shift(pos, Down), shift(pos, Left), shift(pos, Right)]
 }
 
 pub fn diag_neighbors(pos: Position) -> List(Position) {
-  [up(left(pos)), up(right(pos)), down(left(pos)), down(right(pos))]
+  [
+    shift(pos, UpLeft),
+    shift(pos, UpRight),
+    shift(pos, DownLeft),
+    shift(pos, DownRight),
+  ]
 }
 
 pub fn all_neighbors(pos: Position) -> List(Position) {
@@ -46,4 +90,12 @@ pub fn compare(a: Position, b: Position) -> order.Order {
     order.Eq -> int.compare(a.col, b.col)
     x -> x
   }
+}
+
+pub fn sub(a: Position, b: Position) -> Position {
+  Position(a.row - b.row, a.col - b.col)
+}
+
+pub fn add(a: Position, b: Position) -> Position {
+  Position(a.row + b.row, a.col + b.col)
 }

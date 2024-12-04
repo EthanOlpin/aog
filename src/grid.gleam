@@ -2,9 +2,9 @@ import gleam/dict.{type Dict}
 import gleam/list
 import gleam/result
 import gleam/yielder.{type Yielder}
-import position.{type Position, Position}
+import position.{type Direction, type Position, Position}
 
-pub type Grid(a) {
+pub opaque type Grid(a) {
   Grid(width: Int, height: Int, wrapping: Bool, cells: Dict(Position, a))
 }
 
@@ -50,20 +50,13 @@ pub fn get_cell(grid: Grid(a), position: Position) -> Result(Cell(a), Nil) {
   Ok(Cell(position, x))
 }
 
-pub fn up(grid: Grid(a), pos: Position) -> Result(Cell(a), Nil) {
-  get_cell(grid, position.up(pos))
-}
-
-pub fn down(grid: Grid(a), pos: Position) -> Result(Cell(a), Nil) {
-  get_cell(grid, position.down(pos))
-}
-
-pub fn left(grid: Grid(a), pos: Position) -> Result(Cell(a), Nil) {
-  get_cell(grid, position.left(pos))
-}
-
-pub fn right(grid: Grid(a), pos: Position) -> Result(Cell(a), Nil) {
-  get_cell(grid, position.right(pos))
+pub fn neighbor(
+  grid: Grid(a),
+  cell: Cell(a),
+  direction: Direction,
+) -> Result(Cell(a), Nil) {
+  let next = position.shift(cell.position, direction)
+  get_cell(grid, next)
 }
 
 pub fn ortho_neighbors(grid: Grid(a), pos: Position) -> List(Cell(a)) {
@@ -81,16 +74,32 @@ pub fn all_neighbors(grid: Grid(a), pos: Position) -> List(Cell(a)) {
   |> list.filter_map(get_cell(grid, _))
 }
 
-pub fn cells(grid: Grid(a)) -> List(Cell(a)) {
+pub fn to_list(grid: Grid(a)) -> List(Cell(a)) {
   dict.to_list(grid.cells)
   |> list.map(fn(entry) { Cell(entry.0, entry.1) })
   |> list.sort(fn(a, b) { position.compare(a.position, b.position) })
 }
 
 pub fn iter_cells(grid: Grid(a)) -> Yielder(Cell(a)) {
-  let cell_iter = yielder.from_list(cells(grid))
+  let cell_iter = yielder.from_list(to_list(grid))
   case grid.wrapping {
     True -> yielder.cycle(cell_iter)
     False -> cell_iter
+  }
+}
+
+pub fn cell_value(cell: Cell(a)) -> a {
+  cell.value
+}
+
+pub fn offshoot(
+  grid: Grid(a),
+  from: Cell(a),
+  dir: Direction,
+  size: Int,
+) -> List(Cell(a)) {
+  case neighbor(grid, from, dir) {
+    Ok(cell) if size > 0 -> [cell, ..offshoot(grid, cell, dir, size - 1)]
+    _ -> []
   }
 }

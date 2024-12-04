@@ -28,7 +28,7 @@ pub fn grid(
   row_sep_pattern: String,
   col_sep_pattern: String,
 ) -> Grid(String) {
-  split(row_sep_pattern, input)
-  |> list.map(split(col_sep_pattern, _))
+  split(input, row_sep_pattern)
+  |> list.map(split(_, col_sep_pattern))
   |> grid.from_list
 }

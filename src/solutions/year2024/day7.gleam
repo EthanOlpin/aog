@@ -1,35 +1,42 @@
+import gleam/bool
 import gleam/int
 import gleam/io
 import gleam/list
+import gleam/result
 import input
 import num
 import parse
 
 type Operator {
   Add
-  Mul
+  Multiply
   Concat
 }
 
-fn apply_operator(op, a, b) {
+fn unapply_operator(op, a, b) {
   case op {
-    Add -> a + b
-    Mul -> a * b
-    Concat -> num.concat(a, b)
+    Add if a >= b -> Ok(a - b)
+    Multiply if b != 0 && a % b == 0 -> Ok(a / b)
+    Concat -> {
+      use <- bool.guard(!num.has_suffix(a, b), Error(Nil))
+      Ok(num.strip_suffix(a, b))
+    }
+    _ -> Error(Nil)
   }
 }
 
 type Equation {
-  Equation(target: Int, operands: List(Int))
+  Equation(aggregate: Int, operands: List(Int))
 }
 
 fn try_solve(equation, ops) {
   case equation {
-    Equation(target, [final]) if final == target -> Ok(target)
-    Equation(_, [a, b, ..rest]) -> {
+    Equation(aggregate, []) if aggregate == 0 -> Ok(aggregate)
+    Equation(aggregate, [a, ..operands]) -> {
       use op <- list.find_map(ops)
-      let operands = [apply_operator(op, a, b), ..rest]
-      try_solve(Equation(..equation, operands:), ops)
+      use unapplied <- result.try(unapply_operator(op, aggregate, a))
+      try_solve(Equation(aggregate: unapplied, operands:), ops)
+      |> result.replace(aggregate)
     }
     _ -> Error(Nil)
   }
@@ -37,17 +44,17 @@ fn try_solve(equation, ops) {
 
 fn parse_equation(line) {
   let line = line |> parse.ints
-  let assert [target, ..operands] = line
-  Equation(target: target, operands:)
+  let assert [aggregate, ..operands] = line
+  Equation(aggregate:, operands: list.reverse(operands))
 }
 
 pub fn main() {
   let input = input.get() |> parse.lines |> list.map(parse_equation)
-  list.filter_map(input, try_solve(_, [Add, Mul]))
+  list.filter_map(input, try_solve(_, [Add, Multiply]))
   |> int.sum
   |> io.debug
 
-  list.filter_map(input, try_solve(_, [Add, Mul, Concat]))
+  list.filter_map(input, try_solve(_, [Add, Multiply, Concat]))
   |> int.sum
   |> io.debug
 }

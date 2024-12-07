@@ -68,6 +68,19 @@ pub fn shift(pos: Position, direction: Direction) -> Position {
   add(pos, direction_to_delta(direction))
 }
 
+pub fn rotate_right(direction: Direction) -> Direction {
+  case direction {
+    Up -> Right
+    Right -> Down
+    Down -> Left
+    Left -> Up
+    UpLeft -> UpRight
+    UpRight -> DownRight
+    DownRight -> DownLeft
+    DownLeft -> UpLeft
+  }
+}
+
 pub fn ortho_neighbors(pos: Position) -> List(Position) {
   [shift(pos, Up), shift(pos, Down), shift(pos, Left), shift(pos, Right)]
 }

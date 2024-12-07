@@ -50,6 +50,12 @@ pub fn get_cell(grid: Grid(a), position: Position) -> Result(Cell(a), Nil) {
   Ok(Cell(position, x))
 }
 
+pub fn update(grid: Grid(a), position: Position, value: a) -> Grid(a) {
+  let position = normalize_position(grid, position)
+  let cells = dict.insert(grid.cells, position, value)
+  Grid(..grid, cells:)
+}
+
 pub fn neighbor(
   grid: Grid(a),
   cell: Cell(a),

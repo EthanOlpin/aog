@@ -20,7 +20,7 @@ pub fn lines(s: String) -> List(String) {
 
 pub fn split(s: String, pattern: String) -> List(String) {
   let assert Ok(re) = regexp.from_string(pattern)
-  regexp.split(re, s)
+  regexp.split(re, s) |> list.filter(fn(s) { s != "" })
 }
 
 pub fn grid(
@@ -28,7 +28,9 @@ pub fn grid(
   row_sep_pattern: String,
   col_sep_pattern: String,
 ) -> Grid(String) {
-  split(input, row_sep_pattern)
+  input
+  |> string.trim
+  |> split(row_sep_pattern)
   |> list.map(split(_, col_sep_pattern))
   |> grid.from_list
 }

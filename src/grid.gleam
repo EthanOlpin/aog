@@ -15,9 +15,11 @@ pub type Cell(a) {
 pub fn from_list(xs: List(List(a))) -> Grid(a) {
   let row_count = list.length(xs)
   let cells =
-    list.index_map(xs, fn(row, r) {
-      list.index_map(row, fn(cell, c) { #(Position(r, c), cell) })
-    })
+    {
+      use row, r <- list.index_map(xs)
+      use cell, c <- list.index_map(row)
+      #(Position(r, c), cell)
+    }
     |> list.flatten
     |> dict.from_list
   let width = dict.size(cells) / row_count

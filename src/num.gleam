@@ -73,3 +73,10 @@ pub fn strip_suffix(n: Int, suffix: Int) -> Int {
   let suffix_len = len(suffix)
   n / pow(10, suffix_len)
 }
+
+pub fn gcd(a: Int, b: Int) -> Int {
+  case b {
+    0 -> a
+    _ -> gcd(b, a % b)
+  }
+}

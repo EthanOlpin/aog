@@ -112,3 +112,12 @@ pub fn sub(a: Position, b: Position) -> Position {
 pub fn add(a: Position, b: Position) -> Position {
   Position(a.row + b.row, a.col + b.col)
 }
+
+pub fn negate(a: Position) -> Position {
+  Position(-a.row, -a.col)
+}
+
+pub fn reduce(a: Position) -> Position {
+  let g = num.gcd(a.row, a.col)
+  Position(a.row / g, a.col / g)
+}

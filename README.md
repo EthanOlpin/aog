@@ -6,9 +6,10 @@
 
 1. Install Gleam >= 1.6.2
 2. Clone this repository
-3. Set the `AOC_SESSION_ID` environment variable to have the value of your `session` cookie from [adventofcode.com](https://adventofcode.com) (or create a file in the project root with your input at `input/<year>/<day>.txt`)
+3. Set the `ADVENT_OF_CODE_SESSION_ID` environment variable to have the value of your `session` cookie from [adventofcode.com](https://adventofcode.com) (or create a file in the project root with your input at `input/<year>/<day>.txt`)
 4. Run a solution with:
 
 ```bash
-gleam run -- --year <year> --day <day>
+chmod +x ./aog.sh
+./aog.sh <year> <day>
 ```

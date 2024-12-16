@@ -21,11 +21,19 @@ pub fn unsafe_mod(x: Int, y: Int) -> Int {
   r
 }
 
-pub fn assert_int(a: Float) -> Int {
-  let assert Ok(result) = case float.floor(a) == a {
+pub fn is_int(a: Float) -> Bool {
+  float.floor(a) == a
+}
+
+pub fn as_int(a: Float) -> Result(Int, Nil) {
+  case is_int(a) {
     True -> Ok(float.truncate(a))
     False -> Error(Nil)
   }
+}
+
+pub fn assert_int(a: Float) -> Int {
+  let assert Ok(result) = as_int(a)
   result
 }
 

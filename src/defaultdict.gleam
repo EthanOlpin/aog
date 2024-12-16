@@ -60,3 +60,19 @@ pub fn to_dict(dd: DefaultDict(k, v)) -> dict.Dict(k, v) {
 pub fn values(dd: DefaultDict(k, v)) -> List(v) {
   dict.values(dd.dict)
 }
+
+pub fn filter(dd: DefaultDict(k, v), fun: fn(k, v) -> Bool) -> DefaultDict(k, v) {
+  DefaultDict(default: dd.default, dict: dict.filter(dd.dict, fun))
+}
+
+pub fn keys(dd: DefaultDict(k, v)) -> List(k) {
+  dict.keys(dd.dict)
+}
+
+pub fn fold(dd: DefaultDict(k, v), acc: a, fun: fn(a, k, v) -> a) -> a {
+  dict.fold(dd.dict, acc, fun)
+}
+
+pub fn reduce(dd: DefaultDict(k, v), fun: fn(v, v) -> v) -> v {
+  fold(dd, dd.default, fn(acc, _, v) { fun(acc, v) })
+}

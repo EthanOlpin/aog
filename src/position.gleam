@@ -81,6 +81,19 @@ pub fn rotate_right(direction: Direction) -> Direction {
   }
 }
 
+pub fn rotate_left(direction: Direction) -> Direction {
+  case direction {
+    Up -> Left
+    Left -> Down
+    Down -> Right
+    Right -> Up
+    UpLeft -> DownLeft
+    DownLeft -> DownRight
+    DownRight -> UpRight
+    UpRight -> UpLeft
+  }
+}
+
 pub fn ortho_neighbors(pos: Position) -> List(Position) {
   [shift(pos, Up), shift(pos, Down), shift(pos, Left), shift(pos, Right)]
 }
@@ -120,4 +133,9 @@ pub fn negate(a: Position) -> Position {
 pub fn reduce(a: Position) -> Position {
   let g = num.gcd(a.row, a.col)
   Position(a.row / g, a.col / g)
+}
+
+pub fn distance(a: Position, b: Position) -> Int {
+  let Position(row_diff, col_diff) = sub(a, b)
+  int.absolute_value(row_diff) + int.absolute_value(col_diff)
 }

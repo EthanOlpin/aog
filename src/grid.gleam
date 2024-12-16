@@ -1,6 +1,7 @@
 import gleam/dict.{type Dict}
 import gleam/list
 import gleam/result
+import gleam/string
 import gleam/yielder.{type Yielder}
 import position.{type Direction, type Position, Position}
 
@@ -10,6 +11,14 @@ pub opaque type Grid(a) {
 
 pub type Cell(a) {
   Cell(position: Position, value: a)
+}
+
+pub fn rows(grid: Grid(a)) -> Int {
+  grid.height
+}
+
+pub fn cols(grid: Grid(a)) -> Int {
+  grid.width
 }
 
 pub fn from_list(xs: List(List(a))) -> Grid(a) {
@@ -110,4 +119,31 @@ pub fn offshoot(
     Ok(cell) if size > 0 -> [cell, ..offshoot(grid, cell, dir, size - 1)]
     _ -> []
   }
+}
+
+pub fn find(grid: Grid(a), pred: fn(Cell(a)) -> Bool) -> Result(Cell(a), Nil) {
+  iter_cells(grid)
+  |> yielder.find(fn(cell) { pred(cell) })
+}
+
+pub fn map(grid: Grid(a), f: fn(Cell(a)) -> b) -> Grid(b) {
+  let cells = dict.map_values(grid.cells, fn(pos, val) { f(Cell(pos, val)) })
+  Grid(
+    width: grid.width,
+    height: grid.height,
+    wrapping: grid.wrapping,
+    cells: cells,
+  )
+}
+
+pub fn display(grid: Grid(a), cell_to_string: fn(Cell(a)) -> String) -> String {
+  to_list(grid)
+  |> list.map(cell_to_string)
+  |> list.sized_chunk(cols(grid))
+  |> list.map(string.join(_, ""))
+  |> string.join("\n")
+}
+
+pub fn display_strings(grid: Grid(String)) -> String {
+  display(grid, fn(cell) { cell.value })
 }

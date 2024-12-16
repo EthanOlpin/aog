@@ -35,6 +35,13 @@ pub fn len(a: Int) -> Int {
   log10 |> float.truncate |> int.add(1)
 }
 
+pub fn split(n: Int, i: Int) -> List(Int) {
+  let len = len(n)
+  let prefix = n / pow(10, len - i)
+  let suffix = n % pow(10, i)
+  [prefix, suffix]
+}
+
 pub fn pow(a: Int, b: Int) -> Int {
   let assert Ok(result) = int.power(a, b |> int.to_float)
   assert_int(result)

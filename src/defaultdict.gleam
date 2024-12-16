@@ -23,6 +23,14 @@ pub fn counter_from_list(xs: List(k)) -> DefaultDict(k, Int) {
   list.map(xs, fn(x) { #(x, 1) }) |> from_list(0)
 }
 
+pub fn counter_add(
+  dd: DefaultDict(k, Int),
+  key: k,
+  value: Int,
+) -> DefaultDict(k, Int) {
+  upsert(dd, key, fn(count) { count + value })
+}
+
 pub fn get(dd: DefaultDict(k, v), key: k) -> v {
   result.unwrap(dict.get(dd.dict, key), dd.default)
 }
@@ -38,4 +46,12 @@ pub fn upsert(
 ) -> DefaultDict(k, v) {
   let fun = fn(opt) { option.unwrap(opt, dd.default) |> fun }
   DefaultDict(..dd, dict: dict.upsert(dd.dict, key, fun))
+}
+
+pub fn to_dict(dd: DefaultDict(k, v)) -> dict.Dict(k, v) {
+  dd.dict
+}
+
+pub fn values(dd: DefaultDict(k, v)) -> List(v) {
+  dict.values(dd.dict)
 }

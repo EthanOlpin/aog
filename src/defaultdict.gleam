@@ -7,6 +7,9 @@ pub type DefaultDict(k, v) {
   DefaultDict(default: v, dict: dict.Dict(k, v))
 }
 
+pub type Counter(k) =
+  DefaultDict(k, Int)
+
 pub fn new(default: v) -> DefaultDict(k, v) {
   DefaultDict(default:, dict: dict.new())
 }
@@ -15,12 +18,14 @@ pub fn from_list(xs: List(#(k, v)), default: v) -> DefaultDict(k, v) {
   DefaultDict(default:, dict: dict.from_list(xs))
 }
 
-pub fn new_counter() -> DefaultDict(k, Int) {
+pub fn new_counter() -> Counter(k) {
   new(0)
 }
 
-pub fn counter_from_list(xs: List(k)) -> DefaultDict(k, Int) {
-  list.map(xs, fn(x) { #(x, 1) }) |> from_list(0)
+pub fn counter_from_list(xs: List(k)) -> Counter(k) {
+  list.fold(xs, new_counter(), fn(dd, x) {
+    upsert(dd, x, fn(count) { count + 1 })
+  })
 }
 
 pub fn counter_add(

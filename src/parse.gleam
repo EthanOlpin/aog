@@ -5,7 +5,7 @@ import gleam/string
 import grid.{type Grid}
 
 pub fn ints(s: String) -> List(Int) {
-  let assert Ok(re) = regexp.from_string("\\d+")
+  let assert Ok(re) = regexp.from_string("-?\\d+")
   regexp.scan(re, s) |> list.filter_map(fn(match) { int.parse(match.content) })
 }
 
@@ -15,7 +15,7 @@ pub fn digits(s: String) -> List(Int) {
 }
 
 pub fn lines(s: String) -> List(String) {
-  string.split(s, "\n")
+  split(s, "\n")
 }
 
 pub fn split(s: String, pattern: String) -> List(String) {

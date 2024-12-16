@@ -19,6 +19,7 @@ pub fn die() -> Nil {
 pub fn sleep(ms: Int) -> Nil
 
 pub fn slow_print(a) -> a {
-  sleep(1000)
   io.debug(a)
+  sleep(1000)
+  a
 }

@@ -69,11 +69,19 @@ pub fn update(grid: Grid(a), position: Position, value: a) -> Grid(a) {
 
 pub fn neighbor(
   grid: Grid(a),
+  position: Position,
+  direction: Direction,
+) -> Result(Cell(a), Nil) {
+  let next = position.shift(position, direction)
+  get_cell(grid, next)
+}
+
+pub fn cell_neighbor(
+  grid: Grid(a),
   cell: Cell(a),
   direction: Direction,
 ) -> Result(Cell(a), Nil) {
-  let next = position.shift(cell.position, direction)
-  get_cell(grid, next)
+  neighbor(grid, cell.position, direction)
 }
 
 pub fn ortho_neighbors(grid: Grid(a), pos: Position) -> List(Cell(a)) {
@@ -115,7 +123,7 @@ pub fn offshoot(
   dir: Direction,
   size: Int,
 ) -> List(Cell(a)) {
-  case neighbor(grid, from, dir) {
+  case cell_neighbor(grid, from, dir) {
     Ok(cell) if size > 0 -> [cell, ..offshoot(grid, cell, dir, size - 1)]
     _ -> []
   }

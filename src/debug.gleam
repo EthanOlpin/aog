@@ -23,3 +23,13 @@ pub fn slow_print(a) -> a {
   sleep(1000)
   a
 }
+
+pub fn print_if(a, b: Bool) -> Nil {
+  case b {
+    True -> {
+      io.debug(a)
+      Nil
+    }
+    False -> Nil
+  }
+}

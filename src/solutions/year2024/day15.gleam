@@ -28,7 +28,7 @@ fn get_other_half(grid: Grid(Tile), side: Side, box_cell: Cell(Tile)) {
     LeftSide -> Right
     RightSide -> Left
   }
-  let assert Ok(other) = grid.neighbor(grid, box_cell, extending_dir)
+  let assert Ok(other) = grid.cell_neighbor(grid, box_cell, extending_dir)
   other
 }
 
@@ -49,7 +49,7 @@ fn push_box(
 }
 
 fn push_box_cell(grid: Grid(Tile), box_cell: Cell(Tile), direction: Direction) {
-  use next <- result.try(grid.neighbor(grid, box_cell, direction))
+  use next <- result.try(grid.cell_neighbor(grid, box_cell, direction))
   case next.value {
     Wall -> Error(Nil)
     Box(size) -> {
@@ -81,7 +81,7 @@ fn expand_grid(grid: Grid(Tile)) -> Grid(Tile) {
 
 fn move(robot_position: Position, grid: Grid(Tile), direction: Direction) {
   use cell <- result.try(grid.get_cell(grid, robot_position))
-  use next <- result.try(grid.neighbor(grid, cell, direction))
+  use next <- result.try(grid.cell_neighbor(grid, cell, direction))
   case next.value {
     Wall -> Error(Nil)
     Box(box) -> {

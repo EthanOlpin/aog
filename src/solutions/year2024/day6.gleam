@@ -13,7 +13,7 @@ type Step {
 }
 
 fn step(grid: Grid(String), cell: Cell(String), direction: Direction) {
-  case grid.neighbor(grid, cell, direction) {
+  case grid.cell_neighbor(grid, cell, direction) {
     Ok(Cell(_, value: "#")) ->
       step(grid, cell, position.rotate_right(direction))
     Ok(cell) -> Next(cell, direction)

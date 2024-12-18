@@ -64,6 +64,24 @@ fn direction_to_delta(direction: Direction) -> Position {
   }
 }
 
+fn degrees(direction: Direction) {
+  case direction {
+    Right -> 0
+    UpRight -> 45
+    Up -> 90
+    UpLeft -> 135
+    Left -> 180
+    DownLeft -> 225
+    Down -> 270
+    DownRight -> 315
+  }
+}
+
+pub fn degree_delta(dir_a: Direction, dir_b: Direction) {
+  let delta = int.absolute_value(degrees(dir_a) - degrees(dir_b))
+  int.min(delta, 360 - delta)
+}
+
 pub fn shift(pos: Position, direction: Direction) -> Position {
   add(pos, direction_to_delta(direction))
 }

@@ -95,3 +95,18 @@ pub fn gcd(a: Int, b: Int) -> Int {
     _ -> gcd(b, a % b)
   }
 }
+
+pub fn pow_mod(base: Int, exponent: Int, modulus: Int) -> Int {
+  case exponent {
+    0 -> 1
+    _ -> {
+      let half = exponent / 2
+      let square = pow_mod(base, half, modulus)
+      let result = square * square % modulus
+      case exponent % 2 {
+        0 -> result
+        _ -> result * base % modulus
+      }
+    }
+  }
+}

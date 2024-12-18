@@ -46,7 +46,7 @@ fn estimate_distance(from: Node, to: position.Position) {
 fn search(start: Node, end: grid.Cell(String), grid) {
   let distance =
     astar.int_distance(distance, estimate_distance(_, end.position))
-  astar.search(
+  astar.search_all(
     [start],
     fn(node) { node.position == end.position },
     neighbors(_, grid),

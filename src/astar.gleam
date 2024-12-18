@@ -3,6 +3,7 @@ import gleam/dict.{type Dict}
 import gleam/float
 import gleam/int
 import gleam/list
+import gleam/option.{type Option, None, Some}
 import gleam/order.{type Order}
 import gleam/result
 import gleam/set.{type Set}
@@ -134,52 +135,42 @@ fn do_all_states_on_paths(
   }
 }
 
-pub fn search_with_filter(
+pub fn search_all_with_filter(
   starting_from starts: List(v),
   until is_goal: fn(v) -> Bool,
   try_neighbors get_neighbors: fn(v) -> List(v),
-  unless filter: fn(v, d) -> Bool,
+  such_that filter: fn(v, d) -> Bool,
   minimizing distance: Distance(v, d),
 ) {
-  let start_nodes =
-    list.map(starts, fn(start) {
-      Node(start, distance.zero, distance.estimate_to_goal(start))
-    })
-  let open_set = pq.from_list(start_nodes, compare_nodes(distance.compare_real))
-  let came_from = defaultdict.new(set.new())
-  let dists_from_start =
-    list.fold(starts, new_distance_map(), fn(map, start) {
-      record_distance(map, start, distance.zero)
-    })
-  let found_goals = list.filter(start_nodes, fn(n) { is_goal(n.value) })
-
-  try_search(
-    SearchState(
-      open_set:,
-      dists_from_start:,
-      came_from:,
-      found_goals: found_goals,
-    ),
-    is_goal,
-    get_neighbors,
-    filter,
-    distance,
-  )
+  search(starts, is_goal, get_neighbors, filter, distance, None)
 }
 
-pub fn search(
+pub fn search_one_with_filter(
+  starting_from starts: List(v),
+  until is_goal: fn(v) -> Bool,
+  try_neighbors get_neighbors: fn(v) -> List(v),
+  such_that filter: fn(v, d) -> Bool,
+  minimizing distance: Distance(v, d),
+) {
+  search(starts, is_goal, get_neighbors, filter, distance, Some(1))
+}
+
+pub fn search_all(
   starting_from starts: List(v),
   until is_goal: fn(v) -> Bool,
   try_neighbors get_neighbors: fn(v) -> List(v),
   minimizing distance: Distance(v, d),
 ) {
-  search_with_filter(
-    starts,
-    is_goal,
-    get_neighbors,
-    fn(_, _) { True },
-    distance,
-  )
+  search(starts, is_goal, get_neighbors, fn(_, _) { True }, distance, None)
+}
+
+pub fn search_one(
+  starting_from starts: List(v),
+  until is_goal: fn(v) -> Bool,
+  try_neighbors get_neighbors: fn(v) -> List(v),
+  minimizing distance: Distance(v, d),
+) {
+  search(starts, is_goal, get_neighbors, fn(_, _) { True }, distance, Some(1))
 }
 
 fn make_result(final_state: SearchState(v, d)) {
@@ -203,6 +194,42 @@ type SearchState(v, d) {
     dists_from_start: DistanceMap(v, d),
     came_from: defaultdict.DefaultDict(v, Set(v)),
     found_goals: List(Node(v, d)),
+    goal_limit: Option(Int),
+  )
+}
+
+fn search(
+  starting_from starts: List(v),
+  until is_goal: fn(v) -> Bool,
+  try_neighbors get_neighbors: fn(v) -> List(v),
+  such_that filter: fn(v, d) -> Bool,
+  minimizing distance: Distance(v, d),
+  up_to limit: Option(Int),
+) {
+  let start_nodes =
+    list.map(starts, fn(start) {
+      Node(start, distance.zero, distance.estimate_to_goal(start))
+    })
+  let open_set = pq.from_list(start_nodes, compare_nodes(distance.compare_real))
+  let came_from = defaultdict.new(set.new())
+  let dists_from_start =
+    list.fold(starts, new_distance_map(), fn(map, start) {
+      record_distance(map, start, distance.zero)
+    })
+  let found_goals = list.filter(start_nodes, fn(n) { is_goal(n.value) })
+
+  try_search(
+    SearchState(
+      open_set:,
+      dists_from_start:,
+      came_from:,
+      found_goals: found_goals,
+      goal_limit: limit,
+    ),
+    is_goal,
+    get_neighbors,
+    filter,
+    distance,
   )
 }
 
@@ -265,13 +292,25 @@ fn get_neighbors(
         distance.compare_real,
       )
 
-    case compared_to_known_dist {
-      order.Lt | order.Eq -> {
+    let goal_limit = case state.goal_limit {
+      Some(remaining) -> remaining
+      None -> 1
+    }
+
+    let can_lead_to_goal = case compared_to_known_dist {
+      // should be unreachable for valid heuristics
+      order.Lt -> True
+      order.Eq -> goal_limit > 0
+      order.Gt -> False
+    }
+
+    case can_lead_to_goal {
+      True -> {
         let dist_to_end_estimate =
           dist_from_start |> distance.add(distance.estimate_to_goal(neighbor))
         Ok(Node(neighbor, dist_from_start, dist_to_end_estimate))
       }
-      order.Gt -> Error(Nil)
+      False -> Error(Nil)
     }
   })
 }
@@ -295,5 +334,15 @@ fn update_search_state(
     True -> [to_node, ..state.found_goals]
     False -> state.found_goals
   }
-  SearchState(open_set:, dists_from_start:, came_from:, found_goals:)
+  let goal_limit = case state.goal_limit {
+    Some(remaining) -> Some(remaining - 1)
+    None -> None
+  }
+  SearchState(
+    open_set:,
+    dists_from_start:,
+    came_from:,
+    found_goals:,
+    goal_limit:,
+  )
 }

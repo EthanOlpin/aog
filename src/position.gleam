@@ -129,6 +129,21 @@ pub fn all_neighbors(pos: Position) -> List(Position) {
   list.append(ortho_neighbors(pos), diag_neighbors(pos))
 }
 
+pub fn diamond(center: Position, radius: Int) {
+  let Position(row, col) = center
+  list.unique({
+    use ring_radius <- list.flat_map(list.range(2, radius))
+    use delta_row <- list.flat_map(list.range(0, ring_radius))
+    let delta_col = ring_radius - delta_row
+    [
+      Position(row + delta_row, col + delta_col),
+      Position(row + delta_row, col - delta_col),
+      Position(row - delta_row, col + delta_col),
+      Position(row - delta_row, col - delta_col),
+    ]
+  })
+}
+
 pub fn compare(a: Position, b: Position) -> order.Order {
   case int.compare(a.row, b.row) {
     order.Eq -> int.compare(a.col, b.col)

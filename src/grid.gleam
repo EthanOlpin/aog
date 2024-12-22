@@ -99,6 +99,11 @@ pub fn all_neighbors(grid: Grid(a), pos: Position) -> List(Cell(a)) {
   |> list.filter_map(get_cell(grid, _))
 }
 
+pub fn diamond(grid: Grid(a), center: Position, radius: Int) -> List(Cell(a)) {
+  position.diamond(center, radius)
+  |> list.filter_map(get_cell(grid, _))
+}
+
 pub fn to_list(grid: Grid(a)) -> List(Cell(a)) {
   dict.to_list(grid.cells)
   |> list.map(fn(entry) { Cell(entry.0, entry.1) })

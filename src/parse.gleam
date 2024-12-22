@@ -9,6 +9,11 @@ pub fn ints(s: String) -> List(Int) {
   regexp.scan(re, s) |> list.filter_map(fn(match) { int.parse(match.content) })
 }
 
+pub fn int(s: String) -> Int {
+  let assert [first, ..] = ints(s)
+  first
+}
+
 pub fn digits(s: String) -> List(Int) {
   let assert Ok(re) = regexp.from_string("\\d")
   regexp.scan(re, s) |> list.filter_map(fn(match) { int.parse(match.content) })

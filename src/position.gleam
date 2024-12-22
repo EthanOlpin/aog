@@ -24,21 +24,21 @@ pub type Direction {
   DownRight
 }
 
-const up = Position(-1, 0)
+pub const up = Position(-1, 0)
 
-const down = Position(1, 0)
+pub const down = Position(1, 0)
 
-const left = Position(0, -1)
+pub const left = Position(0, -1)
 
-const right = Position(0, 1)
+pub const right = Position(0, 1)
 
-const up_left = Position(-1, -1)
+pub const up_left = Position(-1, -1)
 
-const up_right = Position(-1, 1)
+pub const up_right = Position(-1, 1)
 
-const down_left = Position(1, -1)
+pub const down_left = Position(1, -1)
 
-const down_right = Position(1, 1)
+pub const down_right = Position(1, 1)
 
 pub const all_directions = [
   Up,

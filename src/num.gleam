@@ -1,6 +1,7 @@
 import gleam/bool
 import gleam/float
 import gleam/int
+import gleam/list
 import gleam_community/maths/elementary
 
 pub fn diff(a: Int, b: Int) -> Int {
@@ -107,6 +108,28 @@ pub fn pow_mod(base: Int, exponent: Int, modulus: Int) -> Int {
         0 -> result
         _ -> result * base % modulus
       }
+    }
+  }
+}
+
+pub fn from_binary(binary: List(Bool)) {
+  list.fold_right(binary, 0, fn(acc, bit) { acc * 2 + bool.to_int(bit) })
+}
+
+pub fn to_binary_string(n: Int) -> String {
+  do_to_binary_string(n, 1)
+}
+
+fn do_to_binary_string(n: Int, mask: Int) -> String {
+  case mask > n {
+    True -> ""
+    False -> {
+      let bit = case int.bitwise_and(n, mask) != 0 {
+        True -> "1"
+        False -> "0"
+      }
+      let mask = int.bitwise_shift_left(mask, 1)
+      do_to_binary_string(n, mask) <> bit
     }
   }
 }

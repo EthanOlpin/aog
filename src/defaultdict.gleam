@@ -64,3 +64,18 @@ pub fn values(dd: DefaultDict(k, v)) -> List(v) {
 pub fn keys(dd: DefaultDict(k, v)) -> List(k) {
   dict.keys(dd.dict)
 }
+
+pub fn combine(
+  dd1: DefaultDict(k, v),
+  dd2: DefaultDict(k, v),
+  fun: fn(v, v) -> v,
+) -> DefaultDict(k, v) {
+  DefaultDict(default: dd1.default, dict: dict.combine(dd1.dict, dd2.dict, fun))
+}
+
+pub fn merge(
+  dd1: DefaultDict(k, v),
+  dd2: DefaultDict(k, v),
+) -> DefaultDict(k, v) {
+  DefaultDict(default: dd1.default, dict: dict.merge(dd1.dict, dd2.dict))
+}

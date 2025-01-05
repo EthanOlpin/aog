@@ -23,7 +23,7 @@ pub fn main() {
   |> io.debug
 
   instructions
-  |> list.map_fold(False, fn(enabled, instruction) {
+  |> list.map_fold(True, fn(enabled, instruction) {
     case instruction {
       "do()" -> #(True, 0)
       "don't()" -> #(False, 0)

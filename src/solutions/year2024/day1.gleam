@@ -14,7 +14,7 @@ pub fn main() {
     |> list.transpose
 
   list.sort(left, int.compare)
-  |> list.map2(right, num.diff)
+  |> list.map2(list.sort(right, int.compare), num.diff)
   |> int.sum
   |> io.debug
 

@@ -35,9 +35,10 @@ pub fn main() {
   let trailheads =
     grid.to_list(grid) |> list.filter(fn(cell) { cell.value == 0 })
 
-  list.map(trailheads, unique_destinations(0, _, grid))
-  |> list.fold(set.new(), set.union)
-  |> set.size
+  list.map(trailheads, fn(trailhead) {
+    unique_destinations(0, trailhead, grid) |> set.size
+  })
+  |> int.sum
   |> io.debug
 
   list.map(trailheads, unique_path_count(0, _, grid))
